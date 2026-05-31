@@ -10,7 +10,7 @@ result. See RECEIPT-SPEC.md for the full specification.
 
 from __future__ import annotations
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 
 import json
 from dataclasses import dataclass
@@ -84,11 +84,11 @@ def verify_receipt(receipt: dict | str | bytes) -> VerifyResult:
     provenance = receipt.get("provenance")
     attestation = receipt.get("attestation")
 
-    if not execution or not isinstance(execution, dict):
+    if execution is None or not isinstance(execution, dict):
         return VerifyResult(ok=False, message="missing or invalid 'execution' section")
-    if not provenance or not isinstance(provenance, dict):
+    if provenance is None or not isinstance(provenance, dict):
         return VerifyResult(ok=False, message="missing or invalid 'provenance' section")
-    if not attestation or not isinstance(attestation, dict):
+    if attestation is None or not isinstance(attestation, dict):
         return VerifyResult(ok=False, message="missing or invalid 'attestation' section")
 
     exec_manifest = execution.get("skill_manifest_hash", "")
