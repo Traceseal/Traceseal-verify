@@ -10,7 +10,7 @@ result. See RECEIPT-SPEC.md for the full specification.
 
 from __future__ import annotations
 
-__version__ = "1.0.1"
+__version__ = "1.0.2"
 
 import json
 from dataclasses import dataclass
@@ -91,8 +91,21 @@ def verify_receipt(receipt: dict | str | bytes) -> VerifyResult:
     if attestation is None or not isinstance(attestation, dict):
         return VerifyResult(ok=False, message="missing or invalid 'attestation' section")
 
+    # Skill receipts attest that a specific signed code artifact ran, so the
+    # manifest hash is mandatory and must agree across both sections. Other
+    # receipt types (model/tool/orchestration/...) legitimately carry no
+    # manifest. Treating "skill" as the default keeps receipts that omit the
+    # discriminator on the strict path — omission must never skip the check.
     exec_manifest = execution.get("skill_manifest_hash", "")
     prov_manifest = provenance.get("manifest_hash", "")
+    receipt_type = execution.get("receipt_type", "skill")
+
+    if receipt_type == "skill":
+        if not exec_manifest:
+            return VerifyResult(ok=False, message="skill receipt missing execution.skill_manifest_hash")
+        if not prov_manifest:
+            return VerifyResult(ok=False, message="skill receipt missing provenance.manifest_hash")
+
     if exec_manifest and prov_manifest and exec_manifest != prov_manifest:
         return VerifyResult(
             ok=False,
@@ -116,6 +129,15 @@ def verify_receipt(receipt: dict | str | bytes) -> VerifyResult:
     signature_hex = attestation.get("signature", "")
     if not signature_hex:
         return VerifyResult(ok=False, message="attestation missing signature")
+
+    # An Ed25519 signature is exactly 64 bytes (128 hex chars). Bound the
+    # length before decoding so a hostile receipt can't force an unbounded
+    # bytes.fromhex() allocation (the crypto layer would reject it anyway).
+    if len(signature_hex) != 128:
+        return VerifyResult(
+            ok=False,
+            message=f"signature is {len(signature_hex)} hex chars, expected 128",
+        )
 
     try:
         signature = bytes.fromhex(signature_hex)
