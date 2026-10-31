@@ -2,7 +2,7 @@
 
 **Status:** active (shipped — v1.0.1 on PyPI)
 **Owner intent:** The public TraceSeal verification package. Released 2026-05-31; maintained, not in active feature development.
-**Last reviewed:** 2026-06-05
+**Last reviewed:** 2026-10-31 (unreleased: fingerprint derivation fix, chain-link checks; see CHANGELOG)
 
 ## Run
 ```bash

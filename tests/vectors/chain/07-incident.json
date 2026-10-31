@@ -1,0 +1,27 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:24f6ed6acbfe1009c030d7ca567c33ca",
+    "operator_public_key": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+    "signature": "b77633f0d4426ee7afc146a6b2ce8b1bd743e6d05d2c3a6361847c227c485359b607e29db5500e4cd4dd9db2def5f9b0ce96e916561cd82f08fa543d7cfbea09"
+  },
+  "execution": {
+    "aware_at": "2026-10-01T12:00:00Z",
+    "category": "malfunction",
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:5fdbbd1543b59b3684aad8d72b11762b582c15e65ed1e761e9781222ec79125d",
+    "chain_seq": 7,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "incident_version": "1.0",
+    "receipt_type": "incident",
+    "recorded_at": "2026-10-31T22:55:10Z",
+    "severity": "low",
+    "status": "detected"
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}

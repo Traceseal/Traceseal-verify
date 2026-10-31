@@ -1,0 +1,27 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:24f6ed6acbfe1009c030d7ca567c33ca",
+    "operator_public_key": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+    "signature": "8d40b1fa3d17b896bb7f9c91b90cbc7c5388b23bfbf8943c68f1d34a069732aeb00b02f0364137c29072839e37d95d0a026705a5fa50a7793a5f41ba16a85a0a"
+  },
+  "execution": {
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:31dded372eb3460be750e0170b2b59d9e997b69f65138b443ec28b30c0533e79",
+    "chain_seq": 8,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "domain_hash": "sha256:e23bce5b82b43b7908019054a148ad9b9ea7ca37be43d5c69961b6bd03c1698b",
+    "erasure_version": "1.0",
+    "object_count": 0,
+    "objects_root": "sha256:4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+    "reason": "other",
+    "receipt_type": "erasure",
+    "retention_overridden": "false"
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}

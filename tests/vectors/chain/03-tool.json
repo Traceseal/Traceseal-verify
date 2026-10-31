@@ -1,0 +1,45 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:56475aa75463474c0285df5dbf2bcab7",
+    "operator_public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "signature": "671ce63a5f83db850947fd338156f33cfb4ef3a813c01b54de83556b767527d048a94ef5e059fbf5817feae9eaf050f9dd28266c1b4851c588829332bf1fab02"
+  },
+  "execution": {
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:22e4949c72829e4951454813fb64786ab2e99842c35d2560737ee32281d40b50",
+    "chain_seq": 3,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "context": {
+      "agent": {
+        "id": "vector-bot"
+      },
+      "caused_by": [
+        "sha256:70f88eedaf96795d2439f0affd350799d9e98f2ae9c59c0319f47cc7727a4a90",
+        "sha256:22e4949c72829e4951454813fb64786ab2e99842c35d2560737ee32281d40b50"
+      ],
+      "context_version": "1.0",
+      "principal": {
+        "kind": "user",
+        "ref": "hmac-sha256:5e06ee7f2c7b2e5c8b50c1ac833fdfc43686fd6f1bc9cc8313ddc16caff4deb4"
+      },
+      "session_id": "s-1",
+      "tool_call_id": "toolu_v"
+    },
+    "exit_code": 0,
+    "input_hash": "sha256:015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862",
+    "ok": "true",
+    "output_hash": "sha256:4062edaf750fb8074e7e83e0c9028c94e32468a8b6f1614774328ef045150f93",
+    "receipt_type": "tool",
+    "started_at": "2026-10-31T22:55:10Z",
+    "tool_name": "refund",
+    "transport": "python",
+    "wall_time_ms": 0
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}
