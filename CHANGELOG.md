@@ -2,6 +2,36 @@
 
 All notable changes to `traceseal-verify` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] — 2026-11-01
+
+Fixes from an internal red-team review. Behaviour is stricter: receipts and
+chains that 1.1 accepted can now fail.
+
+### Security
+- **A signing-key change across a gap is an error**, and `--allow-gaps` no
+  longer hides it. Previously an outsider could append receipts signed with
+  their own key after a gap and the chain reported OK.
+- **Small-order and non-canonical Ed25519 public keys are rejected.** The
+  identity key verifies any message, so such keys let anyone forge or
+  rewrite receipts.
+- **Forks are detected on the signed payload.** Copies of one signed body
+  that differ only in unsigned or encoding details are duplicates, not
+  forks, so an honest operator can't be framed. Upper-case hex keys and
+  signatures are rejected.
+- **Declared key compromise fails the chain** (`previous_key_compromised_after_seq`).
+  Receipts in the compromised range are reported. Use `--allow-compromised`
+  to report without failing.
+- **Duplicate JSON keys, NaN/Infinity, and booleans or nulls in signed
+  sections are rejected** (RECEIPT-SPEC §3).
+- Hostile input (lone surrogates, non-string keys or signatures) fails
+  verification instead of crashing.
+
+### Changed
+- README and spec: the verifier checks the operator's signature and
+  identity; it does not check publisher signatures or transparency-log
+  entries, and a receipt is an operator attestation, not proof of
+  execution. No-warranty notice added.
+
 ## [1.1.0] — 2026-11-01
 
 ### Security
