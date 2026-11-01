@@ -9,14 +9,19 @@ USAGE = """Usage: traceseal-verify [OPTIONS] RECEIPT_FILE [RECEIPT_FILE ...]
 Verify one or more Traceseal Execution Receipts: structure, operator
 signature, and that the displayed fingerprint is derived from the key.
 Chained receipts given together are also checked for gaps, forks, broken
-hash links and key changes outside a valid rotation.
+hash links, key changes outside a valid rotation (a key change across a
+gap is an error), and receipts the operator declared compromised.
+Receipt files with duplicate JSON keys are rejected.
 
 Options:
-  -              Read receipt JSON from stdin
-  --json         Output results as JSON
-  --allow-gaps   Report missing chain positions without failing
-  --no-chain     Skip chain checks
-  -h, --help     Show this message
+  -                   Read receipt JSON from stdin
+  --json              Output results as JSON
+  --allow-gaps        Report missing chain positions without failing
+                      (never suppresses key-change or other chain errors)
+  --allow-compromised Report receipts in a declared-compromised range
+                      without failing
+  --no-chain          Skip chain checks
+  -h, --help          Show this message
 
 Checkpoints, inclusion proofs, timestamps, causality and oversight checks:
   pip install traceseal-observe   (traceseal-chain, traceseal-trace)
@@ -38,9 +43,10 @@ def main() -> None:
         print(USAGE)
         sys.exit(0 if args else 2)
 
-    flags = {"--json", "--allow-gaps", "--no-chain"}
+    flags = {"--json", "--allow-gaps", "--allow-compromised", "--no-chain"}
     json_output = "--json" in args
     allow_gaps = "--allow-gaps" in args
+    allow_compromised = "--allow-compromised" in args
     no_chain = "--no-chain" in args
     files = [a for a in args if a not in flags]
 
@@ -48,7 +54,7 @@ def main() -> None:
         print("error: no receipt files specified", file=sys.stderr)
         sys.exit(2)
 
-    from traceseal_verify import check_chains, verify_receipt
+    from traceseal_verify import check_chains, loads_json, verify_receipt
 
     all_ok = True
     results = []
@@ -57,11 +63,11 @@ def main() -> None:
     for path in files:
         try:
             if path == "-":
-                data = json.load(sys.stdin)
+                data = loads_json(sys.stdin.buffer.read())
             else:
-                with open(path, "r", encoding="utf-8") as fh:
-                    data = json.load(fh)
-        except (OSError, json.JSONDecodeError, ValueError) as e:
+                with open(path, "rb") as fh:
+                    data = loads_json(fh.read())
+        except (OSError, ValueError, RecursionError) as e:
             label = "stdin" if path == "-" else path
             results.append({"file": label, "ok": False, "message": f"cannot read receipt: {e}"})
             all_ok = False
@@ -92,7 +98,7 @@ def main() -> None:
             else:
                 print(f"[FAIL] {path}: {r.message}", file=sys.stderr)
 
-    chains = {} if no_chain else check_chains(verified)
+    chains = {} if no_chain else check_chains(verified, allow_compromised=allow_compromised)
     for cid, c in chains.items():
         failed = bool(c["errors"]) or (bool(c["gaps"]) and not allow_gaps)
         if failed:
@@ -103,8 +109,12 @@ def main() -> None:
                   f"{c['count']} receipt(s), from genesis: {c['starts_at_genesis']}")
             for lo, hi in c["gaps"]:
                 print(f"  GAP: seq {lo}..{hi} missing")
+            for lo, hi in c["compromised_seqs"]:
+                print(f"  COMPROMISED: seq {lo}..{hi} signed by a key declared compromised")
             for e in c["errors"]:
                 print(f"  ERROR: {e}")
+            for w in c["warnings"]:
+                print(f"  warning: {w}")
 
     if json_output:
         # Without chains, keep the original list output for compatibility.
