@@ -110,17 +110,34 @@ def is_weak_ed25519_public_key(key: bytes | str) -> bool:
 
 
 def _forbidden_value(value: Any) -> str | None:
-    """Path of the first JSON boolean or null (RECEIPT-SPEC §3), else None."""
-    stack = [(value, "")]
-    while stack:
-        item, where = stack.pop()
+    """Path of the first JSON boolean or null (RECEIPT-SPEC §3), else None.
+
+    Also rejects circular references and nesting deeper than any receipt
+    needs, so a hostile in-memory dict fails instead of hanging.
+    """
+    on_path: set[int] = set()
+
+    def walk(item: Any, where: str, depth: int) -> str | None:
         if item is None or isinstance(item, bool):
             return where or "/"
-        if isinstance(item, dict):
-            stack.extend((v, f"{where}.{k}") for k, v in item.items())
-        elif isinstance(item, list):
-            stack.extend((v, f"{where}[{i}]") for i, v in enumerate(item))
-    return None
+        if isinstance(item, (dict, list)):
+            if depth > 64:
+                return f"{where or '/'} (nested too deeply)"
+            if id(item) in on_path:
+                return f"{where or '/'} (circular reference)"
+            on_path.add(id(item))
+            try:
+                pairs = item.items() if isinstance(item, dict) else enumerate(item)
+                for k, v in pairs:
+                    sub = f"{where}.{k}" if isinstance(item, dict) else f"{where}[{k}]"
+                    found = walk(v, sub, depth + 1)
+                    if found:
+                        return found
+            finally:
+                on_path.discard(id(item))
+        return None
+
+    return walk(value, "", 0)
 
 
 def canonical_dumps(obj: dict) -> bytes:
@@ -302,7 +319,7 @@ def _verify_receipt(receipt: Any) -> VerifyResult:
     if forbidden is not None:
         return VerifyResult(
             ok=False,
-            message=f"signed payload contains a JSON boolean or null at {forbidden} (RECEIPT-SPEC §3)",
+            message=f"signed payload contains a JSON boolean, null or circular value at {forbidden} (RECEIPT-SPEC §3)",
         )
     try:
         payload = canonical_dumps({"execution": execution, "provenance": provenance})

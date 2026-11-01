@@ -309,3 +309,18 @@ class TestNoCrash:
                 check_chains([loads_json(mutated), rs[1]])
             except ValueError:
                 pass
+
+
+def test_circular_dict_input_fails_instead_of_hanging():
+    sk, pk = _key()
+    r = _sign(sk, pk, {"receipt_type": "tool", "tool_name": "x"})
+    r["execution"]["loop"] = r["execution"]
+    result = verify_receipt(r)
+    assert not result.ok and "circular" in result.message
+    deep = cur = {}
+    for _ in range(200):
+        cur["d"] = {}
+        cur = cur["d"]
+    r2 = _sign(sk, pk, {"receipt_type": "tool", "tool_name": "x"})
+    r2["execution"]["deep"] = deep
+    assert not verify_receipt(r2).ok
