@@ -2,7 +2,7 @@
 
 All notable changes to `traceseal-verify` are documented here. Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
-## [Unreleased]
+## [1.1.0] — unreleased
 
 ### Security
 - **The operator fingerprint is now derived from the public key and
