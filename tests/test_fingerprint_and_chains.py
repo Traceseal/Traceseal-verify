@@ -160,7 +160,7 @@ class TestReviewFindings:
         """A rotation whose next_key_acceptance is not a string must become a
         chain error, not an uncaught TypeError (review finding)."""
         sk, pk, rs = _chain(1)
-        for bad in (None, 42, ["ab"]):
+        for bad in (42, ["ab"], {"x": "y"}):  # None is now a §3 violation
             rotation = _sign(sk, pk, {
                 "receipt_type": "chain_key_rotation", "chain_version": "1.0", "chain_id": "c",
                 "chain_seq": 2, "chain_prev_hash": receipt_hash(rs[0]),
@@ -170,9 +170,13 @@ class TestReviewFindings:
             c = check_chains(rs + [rotation])["c"]
             assert any("invalid key rotation" in e for e in c["errors"])
 
-    def test_key_hex_case_is_not_a_key_change(self):
-        """Uppercase and lowercase hex of one key are the same key (review finding)."""
+    def test_upper_case_hex_rejected(self):
+        """One encoding only (1.2.0): upper-case key or signature hex would let
+        anyone mint byte-different copies of a receipt (red-team F3)."""
         sk, pk, rs = _chain(2)
-        rs[1]["attestation"]["operator_public_key"] = pk.hex().upper()
-        assert verify_receipt(rs[1]).ok
-        assert check_chains(rs)["c"]["ok"]
+        upper_key = copy.deepcopy(rs[1])
+        upper_key["attestation"]["operator_public_key"] = pk.hex().upper()
+        assert not verify_receipt(upper_key).ok
+        upper_sig = copy.deepcopy(rs[1])
+        upper_sig["attestation"]["signature"] = upper_sig["attestation"]["signature"].upper()
+        assert not verify_receipt(upper_sig).ok

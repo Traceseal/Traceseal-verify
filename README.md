@@ -78,13 +78,19 @@ traceseal-verify receipts/*.json
 
 It reports, across the receipts you supply:
 - missing positions between them (gaps; a missing tail needs a checkpoint);
-- two different receipts at one position (forks);
+- two receipts with different *signed* content at one position (forks).
+  Copies that differ only in the unsigned attestation (`attested_at`,
+  fingerprint form, a re-signature) are duplicates, not forks;
 - broken `chain_prev_hash` links;
 - signing-key changes that didn't go through a valid, dual-signed
-  `chain_key_rotation`, including a key change across a gap.
+  `chain_key_rotation`. A key change across a gap is an error;
+- receipts in a range a rotation declared compromised
+  (`previous_key_compromised_after_seq`), listed as `COMPROMISED`.
 
-Use `--allow-gaps` to report gaps without failing, and `--no-chain` to
-skip these checks.
+Use `--allow-gaps` to report gaps without failing (it never suppresses
+key-change or other chain errors), `--allow-compromised` to report
+declared-compromised receipts without failing, and `--no-chain` to skip
+these checks.
 
 Checkpoints, inclusion proofs, RFC 3161 timestamps, time windows,
 causality and human-oversight checks live in
@@ -103,7 +109,9 @@ if result.ok:
 
 ## What verification checks
 
-1. **Structure**: required sections present, recognised version.
+1. **Structure**: required sections present, recognised version. Files
+   with duplicate JSON keys are rejected, as are JSON booleans and nulls
+   in the signed sections (spec §3).
 2. **Consistency**: for skill receipts, execution and provenance agree on
    which code was signed.
 3. **Fingerprint**: the displayed `operator_fingerprint` is derived from
@@ -111,7 +119,10 @@ if result.ok:
    signature, so without this check a valid receipt could be relabelled
    with someone else's identity.
 4. **Signature**: the operator's Ed25519 signature is valid over the
-   execution and provenance data.
+   execution and provenance data. Keys and signatures must be lower-case
+   hex. Small-order and non-canonical public keys (such as the identity
+   `01 00…00`, under which one signature verifies for every message) are
+   rejected.
 5. **Chain links**: across multiple receipts, as above.
 
 ## What verification does NOT check
