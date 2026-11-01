@@ -249,22 +249,30 @@ _ACCEPTANCE_PURPOSE = "traceseal-chain-key-acceptance/1"
 def _rotation_next_key(execution: dict, signer_hex: str) -> str | None:
     """The incoming key of a valid rotation receipt, else None."""
     nxt = execution.get("next_public_key")
-    if execution.get("previous_public_key") != signer_hex or not isinstance(nxt, str) or len(nxt) != 64:
+    previous = execution.get("previous_public_key")
+    acceptance = execution.get("next_key_acceptance")
+    # Fields are operator-signed but otherwise untrusted: validate types
+    # before decoding so a malformed rotation is an error, not a crash.
+    if (
+        not isinstance(previous, str) or previous.lower() != signer_hex
+        or not isinstance(nxt, str) or len(nxt) != 64
+        or not isinstance(acceptance, str) or len(acceptance) != 128
+    ):
         return None
     message = canonical_dumps({
         "chain_id": execution.get("chain_id"),
         "chain_prev_hash": execution.get("chain_prev_hash"),
         "chain_seq": execution.get("chain_seq"),
         "next_public_key": nxt,
-        "previous_public_key": signer_hex,
+        "previous_public_key": previous,
         "purpose": _ACCEPTANCE_PURPOSE,
     })
     try:
         Ed25519PublicKey.from_public_bytes(bytes.fromhex(nxt)).verify(
-            bytes.fromhex(execution.get("next_key_acceptance", "")), message)
-    except (ValueError, InvalidSignature):
+            bytes.fromhex(acceptance), message)
+    except (ValueError, TypeError, InvalidSignature):
         return None
-    return nxt
+    return nxt.lower()
 
 
 def check_chains(receipts: list[dict]) -> dict[str, dict]:
@@ -306,7 +314,8 @@ def check_chains(receipts: list[dict]) -> dict[str, dict]:
         for i, seq in enumerate(seqs):
             r = slot[seq]
             ex = r["execution"]
-            signer = r["attestation"]["operator_public_key"]
+            # Hex is case-insensitive: compare keys in one canonical form.
+            signer = str(r["attestation"]["operator_public_key"]).lower()
             if i:
                 before = seqs[i - 1]
                 if seq != before + 1:

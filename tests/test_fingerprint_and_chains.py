@@ -147,3 +147,32 @@ class TestProducerVectors:
         done = subprocess.run([sys.executable, "-m", "traceseal_verify.cli", "--json", *map(str, CHAIN)],
                               capture_output=True, text=True)
         assert json.loads(done.stdout)["chains"]["vector-chain"]["ok"]
+
+
+class TestReviewFindings:
+    def _resign(self, receipt, sk):
+        ex = receipt["execution"]
+        receipt["attestation"]["signature"] = sk.sign(
+            canonical_dumps({"execution": ex, "provenance": receipt["provenance"]})).hex()
+        return receipt
+
+    def test_malformed_acceptance_is_an_error_not_a_crash(self):
+        """A rotation whose next_key_acceptance is not a string must become a
+        chain error, not an uncaught TypeError (review finding)."""
+        sk, pk, rs = _chain(1)
+        for bad in (None, 42, ["ab"]):
+            rotation = _sign(sk, pk, {
+                "receipt_type": "chain_key_rotation", "chain_version": "1.0", "chain_id": "c",
+                "chain_seq": 2, "chain_prev_hash": receipt_hash(rs[0]),
+                "chained_at": "2026-10-01T00:00:00Z", "previous_public_key": pk.hex(),
+                "next_public_key": "ab" * 32, "next_key_acceptance": bad})
+            assert verify_receipt(rotation).ok
+            c = check_chains(rs + [rotation])["c"]
+            assert any("invalid key rotation" in e for e in c["errors"])
+
+    def test_key_hex_case_is_not_a_key_change(self):
+        """Uppercase and lowercase hex of one key are the same key (review finding)."""
+        sk, pk, rs = _chain(2)
+        rs[1]["attestation"]["operator_public_key"] = pk.hex().upper()
+        assert verify_receipt(rs[1]).ok
+        assert check_chains(rs)["c"]["ok"]
