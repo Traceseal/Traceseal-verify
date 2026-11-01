@@ -1,0 +1,37 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:56475aa75463474c0285df5dbf2bcab7",
+    "operator_public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "signature": "9a399327d158e84876ba1cc5c5aa3fb000259f54524e0ad1a21242373a85b587eceba7c5fe758f935c60c090acaf4755bc240715324ab2880e454f790e85f406"
+  },
+  "execution": {
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:64eaac6f35ef037afdd3f6168ca4ea0e02de96d50d8bb91f341e683e50b0ad9b",
+    "chain_seq": 4,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "context": {
+      "agent": {
+        "id": "vector-bot"
+      },
+      "context_version": "1.0",
+      "principal": {
+        "kind": "user",
+        "ref": "hmac-sha256:5e06ee7f2c7b2e5c8b50c1ac833fdfc43686fd6f1bc9cc8313ddc16caff4deb4"
+      },
+      "session_id": "s-1"
+    },
+    "decision": "allow",
+    "policy_decision_version": "1.0",
+    "policy_id": "spend-limit",
+    "receipt_type": "policy_decision",
+    "stage": "tool_call",
+    "subject_hash": "sha256:015abd7f5cc57a2dd94b7590f04ad8084273905ee33ec5cebeae62276a97f862"
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}

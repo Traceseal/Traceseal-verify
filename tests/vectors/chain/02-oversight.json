@@ -1,0 +1,49 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:56475aa75463474c0285df5dbf2bcab7",
+    "operator_public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "signature": "0f771e317397b351a1ef4800cada59734a193fa3b9b7366859d3d7c7b6b7472bf0b56a4217e3f1e53f2412d8e9b840d8c446eeb45ec30e0ebe8282fc4fceeb0a"
+  },
+  "execution": {
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:70f88eedaf96795d2439f0affd350799d9e98f2ae9c59c0319f47cc7727a4a90",
+    "chain_seq": 2,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "context": {
+      "agent": {
+        "id": "vector-bot"
+      },
+      "context_version": "1.0",
+      "principal": {
+        "kind": "user",
+        "ref": "hmac-sha256:5e06ee7f2c7b2e5c8b50c1ac833fdfc43686fd6f1bc9cc8313ddc16caff4deb4"
+      },
+      "session_id": "s-1"
+    },
+    "decided_at": "2026-10-01T12:00:30Z",
+    "decision": "approved",
+    "oversight_version": "1.0",
+    "receipt_type": "oversight",
+    "review_seconds": 30,
+    "review_started_at": "2026-10-01T12:00:00Z",
+    "reviewer": {
+      "kind": "user",
+      "ref": "hmac-sha256:11a522567aeb9544ccb6b88c28999f6ad08e77fa653844ea2cadbe4d8ef3e310"
+    },
+    "reviewer_public_key": "2543b92ff1095511476adc8369db6ddc933665a11978dda1404ee1066ca9559d",
+    "reviewer_signature": "5a9c35dd863bd9a7d8fc4d5b692ab4f4506c1b3d588c5e2bc738ce10bbcd64ba612ce3e7e45cc71f8ba7a193188c1d92df4563a81b2f2c78ca6a596eee7bbe0b",
+    "subject_receipt_hashes": [
+      "sha256:70f88eedaf96795d2439f0affd350799d9e98f2ae9c59c0319f47cc7727a4a90"
+    ],
+    "tool_call_ids": [
+      "toolu_v"
+    ]
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}

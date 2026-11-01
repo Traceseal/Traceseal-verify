@@ -7,6 +7,8 @@ Covers (traceseal-verify):
 
 from __future__ import annotations
 
+import hashlib
+
 from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 
@@ -18,14 +20,17 @@ MANIFEST = "sha256:" + "ab" * 32
 def make_receipt(execution: dict, provenance: dict) -> dict:
     """Build a correctly-signed receipt around the given sections."""
     sk = Ed25519PrivateKey.generate()
-    pk_hex = sk.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw).hex()
+    pk_bytes = sk.public_key().public_bytes(Encoding.Raw, PublicFormat.Raw)
+    pk_hex = pk_bytes.hex()
     payload = canonical_dumps({"execution": execution, "provenance": provenance})
     sig_hex = sk.sign(payload).hex()
+    fingerprint = "ed25519:" + hashlib.sha256(pk_bytes).hexdigest()[:32]
     return {
         "receipt_version": "1.0",
         "execution": execution,
         "provenance": provenance,
-        "attestation": {"operator_public_key": pk_hex, "signature": sig_hex},
+        "attestation": {"operator_public_key": pk_hex, "signature": sig_hex,
+                        "operator_fingerprint": fingerprint},
     }
 
 

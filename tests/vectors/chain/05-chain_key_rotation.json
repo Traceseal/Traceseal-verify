@@ -1,0 +1,26 @@
+{
+  "attestation": {
+    "attested_at": "2026-10-31T22:55:10Z",
+    "operator_fingerprint": "ed25519:56475aa75463474c0285df5dbf2bcab7",
+    "operator_public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "signature": "b0a02b7dc6fd84f62f233e3faf69c08429352d3ac1bacbff888b30a684433a24773efce6bf9bd2cbf757c9144e07bd14ab4962865401167a0975111a15a70101"
+  },
+  "execution": {
+    "chain_id": "vector-chain",
+    "chain_prev_hash": "sha256:1bc73ef21a4c98556717050001eb27690d6dadc1d6767a492b395b8a52caefc7",
+    "chain_seq": 5,
+    "chain_version": "1.0",
+    "chained_at": "2026-10-31T22:55:10Z",
+    "next_key_acceptance": "87852c49dfc5bb6a5bc2795eeb22fb162872ab9d60dfbec3966e87600b904cf9a41a5149ca562e7b75f18e969be2c5b2569ee86004f9e3d4c59065ed8f0eb600",
+    "next_public_key": "29acbae141bccaf0b22e1a94d34d0bc7361e526d0bfe12c89794bc9322966dd7",
+    "previous_public_key": "03a107bff3ce10be1d70dd18e74bc09967e4d6309ba50d5f1ddc8664125531b8",
+    "receipt_type": "chain_key_rotation",
+    "rotation_reason": "scheduled",
+    "rotation_version": "1.0"
+  },
+  "provenance": {
+    "provenance_version": "1.0",
+    "provider_attestation": "none"
+  },
+  "receipt_version": "1.0"
+}
